@@ -1,8 +1,10 @@
 package com.starlabs.PaEase.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -13,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -23,14 +27,31 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "transactions")
 @EntityListeners(AuditingEntityListener.class)
 public class Transactions implements Serializable {
+
+    /**
+     * @return the serviceID
+     */
+    public Long getServiceID() {
+        return serviceID;
+    }
+
+    /**
+     * @param serviceID the serviceID to set
+     */
+    public void setServiceID(Long serviceID) {
+        this.serviceID = serviceID;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionID;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "serviceID", nullable = false)
+    @JoinColumn(name = "serviceID", insertable = false, updatable = false)
     private Services service;
+    @Column(name = "serviceID", nullable = false)
+    private Long serviceID;
     private String external_transactionID;
     private double amount;
     private Long msisdn;
@@ -41,7 +62,10 @@ public class Transactions implements Serializable {
     private int status_code;
     private String source_application;
     private String receipt_number;
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    @JsonIgnore
     private Date date_created;
 
     /**

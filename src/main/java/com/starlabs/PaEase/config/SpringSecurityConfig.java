@@ -149,6 +149,9 @@ public class SpringSecurityConfig {
         this.methodList.add("changePin");
         this.methodList.add("pinAttempts");
         this.methodList.add("blockProfile");
+        this.methodList.add("transactions");
+        this.methodList.add("statement");
+        this.methodList.add("postPayment");
     }
 
     /**
@@ -158,8 +161,11 @@ public class SpringSecurityConfig {
         this.methodFieldsMap.put("verifyPin", this.prepareMethodFields(new String[]{"method", "pin", "msisdn"}));
         this.methodFieldsMap.put("changePin", this.prepareMethodFields(new String[]{"method", "pin", "msisdn"}));
         this.methodFieldsMap.put("customerProfile", this.prepareMethodFields(new String[]{"method", "msisdn"}));
+        this.methodFieldsMap.put("transactions", this.prepareMethodFields(new String[]{"method", "msisdn"}));
+        this.methodFieldsMap.put("statement", this.prepareMethodFields(new String[]{"method", "msisdn"}));
         this.methodFieldsMap.put("blockProfile", this.prepareMethodFields(new String[]{"method", "msisdn"}));
         this.methodFieldsMap.put("pinAttempts", this.prepareMethodFields(new String[]{"method", "msisdn", "extra_data"}));
+        this.methodFieldsMap.put("postPayment", this.prepareMethodFields(new String[]{"method", "serviceID", "msisdn", "amount", "account"}));
     }
 
     /**

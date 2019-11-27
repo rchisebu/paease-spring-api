@@ -1,4 +1,4 @@
-package com.starlabs.PaEase.response;
+package com.starlabs.PaEase.service;
 
 import java.util.ArrayList;
 import static java.util.Collections.list;

@@ -6,12 +6,13 @@ import com.starlabs.PaEase.config.SpringSecurityConfig;
 import com.starlabs.PaEase.logger.APILogger;
 import com.starlabs.PaEase.model.Clients;
 import com.starlabs.PaEase.model.CustomerProfile;
+import com.starlabs.PaEase.model.Statement;
 import com.starlabs.PaEase.model.Transactions;
 import com.starlabs.PaEase.repository.ClientRepository;
 import com.starlabs.PaEase.repository.CustomerProfileRepository;
 import com.starlabs.PaEase.repository.TransactionsRepository;
-import com.starlabs.PaEase.response.APIService;
-import com.starlabs.PaEase.response.Response;
+import com.starlabs.PaEase.service.APIService;
+import com.starlabs.PaEase.service.Response;
 import com.starlabs.PaEase.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,6 @@ public class APIController {
         this.resp = new Response();
         this.gson = new Gson();
         this.response = new ArrayList();
-        // this.processor = new APIProcessor(this.log, this.config, this.resp, this.gson, this.utils);
     }
 
     @PreAuthorize("permitAll()")
@@ -70,12 +70,12 @@ public class APIController {
         return clientRepository.findAll();
     }
 
-    @GetMapping("/transactions/{msisdn}")
-    public List<Transactions> getTransactions(@PathVariable(value = "msisdn") String msisdn) {
-        return transactionsRepository.findByMsisdnAndStatusCode(Long.valueOf(msisdn), 100);
+    @GetMapping("/statement/{msisdn}")
+    public List<Statement> getStatement(@PathVariable(value = "msisdn") String msisdn) {
+        return transactionsRepository.statement(Long.valueOf(msisdn), 100);
     }
 
-    @PostMapping("/clients")
+   /* @PostMapping("/clients")
     public Clients createClient(@Valid @RequestBody Clients client) {
         return clientRepository.save(client);
     }
@@ -83,7 +83,7 @@ public class APIController {
     @GetMapping("/customerProfiles")
     public List<CustomerProfile> getCustomerprofiles() {
         return customerProfileRepository.findAll();
-    }
+    }*/
 
     @PostMapping("/v1/json")
     public ResponseEntity<Response> JsonRequest(@Valid @RequestBody Request request) {
