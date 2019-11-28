@@ -2,7 +2,7 @@ package com.starlabs.PaEase.controller;
 
 import com.google.gson.Gson;
 import com.starlabs.PaEase.request.Request;
-import com.starlabs.PaEase.config.SpringSecurityConfig;
+import com.starlabs.PaEase.config.ApiSecurityConfig;
 import com.starlabs.PaEase.logger.APILogger;
 import com.starlabs.PaEase.model.Clients;
 import com.starlabs.PaEase.model.CustomerProfile;
@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class APIController {
 
     private APILogger log;
-    private SpringSecurityConfig config;
+    private ApiSecurityConfig config;
     private Response resp;
     private Gson gson;
     private ArrayList response;
@@ -52,12 +52,12 @@ public class APIController {
     @Autowired
     CustomerProfileRepository customerProfileRepository;
     @Autowired
-    APIService processor;
+    APIService apiService;
 
     public APIController() {
         this.validationResp = new ArrayList();
         this.utils = new Utils();
-        this.config = new SpringSecurityConfig();
+        this.config = new ApiSecurityConfig();
         this.log = new APILogger(getClass());
         this.resp = new Response();
         this.gson = new Gson();
@@ -70,12 +70,16 @@ public class APIController {
         return clientRepository.findAll();
     }
 
-    @GetMapping("/statement/{msisdn}")
-    public List<Statement> getStatement(@PathVariable(value = "msisdn") String msisdn) {
-        return transactionsRepository.statement(Long.valueOf(msisdn), 100);
+    /*
+    @GetMapping("/async")
+    public ResponseEntity<Map<String, String>> async() {
+        this.apiservice.process();
+        Map<String, String> result = new java.util.HashMap<>();
+        result.put("message", "Request is being processed");
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-   /* @PostMapping("/clients")
+     @PostMapping("/clients")
     public Clients createClient(@Valid @RequestBody Clients client) {
         return clientRepository.save(client);
     }
@@ -84,16 +88,17 @@ public class APIController {
     public List<CustomerProfile> getCustomerprofiles() {
         return customerProfileRepository.findAll();
     }*/
-
     @PostMapping("/v1/json")
     public ResponseEntity<Response> JsonRequest(@Valid @RequestBody Request request) {
-        log.info("| " + Thread.currentThread().getStackTrace()[1].getMethodName() + "|" + request.getMsisdn() + " | Request is : " + gson.toJson(request));
+        Request requestForLogs = request;
+        requestForLogs.setPin(00000000000000000);
+        log.info("|" + this.getClass().getSimpleName() + "|"+ Thread.currentThread().getStackTrace()[1].getMethodName() + "|" + request.getMsisdn() + " | Request is : " + gson.toJson(requestForLogs));
 
         if (this.config.checkMethod(request.getMethod())) {
             //Lets validate mandatory fields first before proceeding
             this.validationResp = this.config.validateMethodMandatoryFields(request, log, gson);
             if (this.validationResp.isEmpty()) {
-                this.resp = this.processor.handleRequest(request);
+                this.resp = this.apiService.handleRequest(request);
             } else {
                 //Missing mandatory fields
                 this.resp.setData(response);
@@ -103,7 +108,7 @@ public class APIController {
             }
         } else {
             //Method being requested is not allowed
-            log.info("| " + Thread.currentThread().getStackTrace()[1].getMethodName() + "|" + request.getMsisdn() + " | Requested method : " + request.getMethod() + " is not allowed!");
+            log.info("|" + this.getClass().getSimpleName() +"| " + Thread.currentThread().getStackTrace()[1].getMethodName() + "|" + request.getMsisdn() + " | Requested method : " + request.getMethod() + " is not allowed!");
             this.resp.setData(response);
             this.resp.setStatus(Utils.status_invalid_method);
             this.resp.setStatus_desc(Utils.status_invalid_method_desc.replace("{method}", request.getMethod()));

@@ -28,6 +28,50 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Transactions implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long transactionID;
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "serviceID", insertable = false, updatable = false)
+    private Services service;
+    @Column(name = "serviceID", nullable = false)
+    private Long serviceID;
+    private String external_transactionID;
+    private double amount;
+    private double loan_bal_before = 0.0;
+    private double loan_bal_after = 0.0;
+    private Long msisdn;
+    private Long b_msisdn;
+    private Long account;
+    private String extra_data;
+    private String narration;
+    @Column(name = "status_code", nullable = false)
+    private int statuscode;
+    private int update_status = 0;
+    private String source_application;
+    private String receipt_number;
+    @Column(nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    @JsonIgnore
+    private Date date_created;
+
+    /**
+     * @return the update_status
+     */
+    public int getUpdate_status() {
+        return update_status;
+    }
+
+    /**
+     * @param update_status the update_status to set
+     */
+    public void setUpdate_status(int update_status) {
+        this.update_status = update_status;
+    }
+
     /**
      * @return the serviceID
      */
@@ -41,32 +85,6 @@ public class Transactions implements Serializable {
     public void setServiceID(Long serviceID) {
         this.serviceID = serviceID;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long transactionID;
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "serviceID", insertable = false, updatable = false)
-    private Services service;
-    @Column(name = "serviceID", nullable = false)
-    private Long serviceID;
-    private String external_transactionID;
-    private double amount;
-    private Long msisdn;
-    private Long b_msisdn;
-    private Long account;
-    private String extra_data;
-    private String narration;
-    private int status_code;
-    private String source_application;
-    private String receipt_number;
-    @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    @JsonIgnore
-    private Date date_created;
 
     /**
      * @return the transactionID
@@ -195,20 +213,6 @@ public class Transactions implements Serializable {
     }
 
     /**
-     * @return the status_code
-     */
-    public int getStatus_code() {
-        return status_code;
-    }
-
-    /**
-     * @param status_code the status_code to set
-     */
-    public void setStatus_code(int status_code) {
-        this.status_code = status_code;
-    }
-
-    /**
      * @return the source_application
      */
     public String getSource_application() {
@@ -250,4 +254,45 @@ public class Transactions implements Serializable {
         this.date_created = date_created;
     }
 
+    /**
+     * @return the loan_bal_before
+     */
+    public double getLoan_bal_before() {
+        return loan_bal_before;
+    }
+
+    /**
+     * @param loan_bal_before the loan_bal_before to set
+     */
+    public void setLoan_bal_before(double loan_bal_before) {
+        this.loan_bal_before = loan_bal_before;
+    }
+
+    /**
+     * @return the loan_bal_after
+     */
+    public double getLoan_bal_after() {
+        return loan_bal_after;
+    }
+
+    /**
+     * @param loan_bal_after the loan_bal_after to set
+     */
+    public void setLoan_bal_after(double loan_bal_after) {
+        this.loan_bal_after = loan_bal_after;
+    }
+
+    /**
+     * @return the statuscode
+     */
+    public int getStatuscode() {
+        return statuscode;
+    }
+
+    /**
+     * @param statuscode the statuscode to set
+     */
+    public void setStatuscode(int statuscode) {
+        this.statuscode = statuscode;
+    }
 }

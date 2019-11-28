@@ -11,18 +11,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class SpringSecurityConfig {
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final Map<String, ArrayList<String>> methodFieldsMap;
     private final ArrayList<String> methodList;
 
-    public SpringSecurityConfig() {
+    public ApiSecurityConfig() {
         this.methodFieldsMap = new HashMap<>();
         this.methodList = new ArrayList<>();
         this.prepareMethodFieldsMap();
         this.prepareMethodList();
+    }
+
+    protected void configure(final HttpSecurity http) throws Exception {
+        http.csrf().disable();
     }
 
     public String encodePin(String pin) {
@@ -152,6 +162,7 @@ public class SpringSecurityConfig {
         this.methodList.add("transactions");
         this.methodList.add("statement");
         this.methodList.add("postPayment");
+        this.methodList.add("postPaymentAcknowledgement");
     }
 
     /**
@@ -166,6 +177,7 @@ public class SpringSecurityConfig {
         this.methodFieldsMap.put("blockProfile", this.prepareMethodFields(new String[]{"method", "msisdn"}));
         this.methodFieldsMap.put("pinAttempts", this.prepareMethodFields(new String[]{"method", "msisdn", "extra_data"}));
         this.methodFieldsMap.put("postPayment", this.prepareMethodFields(new String[]{"method", "serviceID", "msisdn", "amount", "account"}));
+        this.methodFieldsMap.put("postPaymentAcknowledgement", this.prepareMethodFields(new String[]{"method", "serviceID", "msisdn", "amount", "account","transactionID","status_code","status_desc","receipt_number"}));
     }
 
     /**
